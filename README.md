@@ -23,6 +23,3 @@ python src/train.py
 
 ## Gradio arayüzünü çalıştırmak için:
 python src/app.py
-
-## Gradio linki
-https://86cf2fbd5553a062dd.gradio.live
