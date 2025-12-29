@@ -14,17 +14,6 @@ Ayrıca modelin test edilebilmesi için Gradio tabanlı basit bir kullanıcı ar
 - Matplotlib  
 - Gradio  
 
-## Proje Yapısı
-project/
-├── data/
-├── src/
-│ ├── train.py
-│ └── app.py
-├── models/
-├── outputs/
-└── requirements.txt
-
-
 ## Çalıştırma
 Gerekli kütüphaneleri yüklemek için:
 pip install -r requirements.txt
