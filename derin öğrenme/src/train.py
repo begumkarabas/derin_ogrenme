@@ -24,22 +24,17 @@ os.makedirs(MODEL_DIR, exist_ok=True)
 def load_and_prepare_invoice_level_df(path: str) -> pd.DataFrame:
     df = pd.read_excel(path)
 
-    # Temel temizlik
     df = df.dropna(subset=["InvoiceNo", "InvoiceDate", "Quantity", "UnitPrice", "Country"])
     df["InvoiceNo"] = df["InvoiceNo"].astype(str)
     df["Country"] = df["Country"].astype(str)
 
-    # Etiket: InvoiceNo 'C' ile başlıyorsa iptal/iade (1), değilse (0)
     df["label"] = df["InvoiceNo"].str.upper().str.startswith("C").astype(int)
 
-    # Amount
     df["Amount"] = df["Quantity"] * df["UnitPrice"]
 
-    # Tarih
     df["InvoiceDate"] = pd.to_datetime(df["InvoiceDate"], errors="coerce")
     df = df.dropna(subset=["InvoiceDate"])
 
-    # Invoice seviyesine özet
     invoice = (
         df.groupby(["InvoiceNo", "Country"], as_index=False)
           .agg(
@@ -84,12 +79,12 @@ def build_mlp(input_dim: int) -> keras.Model:
 
 
 def main():
-    print(">>> TRAIN SCRIPT STARTED")
+    print("TRAIN SCRIPT STARTED")
 
     invoice = load_and_prepare_invoice_level_df(DATA_PATH)
 
     y = invoice["label"].astype(int).values
-    X = invoice.drop(columns=["label", "InvoiceNo"])  # InvoiceNo modelde kullanılmayacak
+    X = invoice.drop(columns=["label", "InvoiceNo"])  
 
     numeric_features = ["num_items", "unique_products", "total_qty", "total_amount", "avg_price", "hour", "dayofweek", "month"]
     categorical_features = ["Country"]
@@ -108,7 +103,6 @@ def main():
     X_train_t = preprocessor.fit_transform(X_train)
     X_test_t = preprocessor.transform(X_test)
 
-    # sparse -> dense
     X_train_dense = X_train_t.toarray() if hasattr(X_train_t, "toarray") else X_train_t
     X_test_dense = X_test_t.toarray() if hasattr(X_test_t, "toarray") else X_test_t
 
@@ -160,9 +154,10 @@ def main():
     plt.savefig(os.path.join(FIG_DIR, "roc_curve.png"), dpi=200)
     plt.close()
 
-    print("\n✅ Model kaydedildi: models/")
-    print("✅ Grafikler kaydedildi: outputs/figures/")
+    print("\nModel kaydedildi: models/")
+    print("Grafikler kaydedildi: outputs/figures/")
 
 
 if __name__ == "__main__":
     main()
+
